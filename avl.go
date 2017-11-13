@@ -7,9 +7,11 @@ of the BSD 2-Clause License. See the LICENSE file for details.
 */
 
 // Package goavl is a simple implementation of the AVL Tree data structure.
-// It's heavily based on the description found at
-// http://www.geeksforgeeks.org/avl-tree-set-1-insertion/.
+//
+// Based on the description found at GeeksforGeeks.
 package goavl
+
+import "fmt"
 
 // treeNode represents a single node in the AVL tree.
 type treeNode struct {
@@ -77,18 +79,20 @@ func (n *treeNode) balanceFactor() int {
 }
 
 // subtreeInsertNode inserts key as a new node in the AVL subtree rooted with n.
-func (n *treeNode) subtreeInsertNode(key int) *treeNode {
+func (n *treeNode) subtreeInsertNode(key int) (*treeNode, error) {
+	var err error
+
 	// Step 1: Normal BST insertion
 	if n == nil {
-		return newNode(key)
+		return newNode(key), nil
 	}
 
 	if key < n.key {
-		n.left = n.left.subtreeInsertNode(key)
+		n.left, err = n.left.subtreeInsertNode(key)
 	} else if key > n.key {
-		n.right = n.right.subtreeInsertNode(key)
+		n.right, err = n.right.subtreeInsertNode(key)
 	} else {
-		return n // no duplicate nodes
+		return n, fmt.Errorf("Key already in the tree: %v", key) // no duplicate nodes
 	}
 
 	// Step 2: Update the height of this ancestor node
@@ -101,22 +105,22 @@ func (n *treeNode) subtreeInsertNode(key int) *treeNode {
 	case bal > 1:
 		switch {
 		case key < n.left.key: // case left left
-			return n.subtreeRotateRight()
+			return n.subtreeRotateRight(), err
 		case key > n.left.key: // case left right
 			n.left = n.left.subtreeRotateLeft()
-			return n.subtreeRotateRight()
+			return n.subtreeRotateRight(), err
 		}
 	case bal < -1:
 		switch {
 		case key > n.right.key: // case right right
-			return n.subtreeRotateLeft()
+			return n.subtreeRotateLeft(), err
 		case key < n.right.key: // case right left
 			n.right = n.right.subtreeRotateRight()
-			return n.subtreeRotateLeft()
+			return n.subtreeRotateLeft(), err
 		}
 	}
 
-	return n
+	return n, err
 }
 
 // subtreeDeleteNode deletes the node associated with key from the AVL subtree
@@ -217,8 +221,9 @@ func NewTree() *Tree {
 }
 
 // Insert inserts a key into the AVL tree.
-func (t *Tree) Insert(key int) {
-	t.root = t.root.subtreeInsertNode(key)
+func (t *Tree) Insert(key int) (err error) {
+	t.root, err = t.root.subtreeInsertNode(key)
+	return
 }
 
 // Delete removes a key from the AVL tree.

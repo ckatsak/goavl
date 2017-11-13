@@ -4,3 +4,5 @@
 [![GoDoc](https://godoc.org/github.com/ckatsak/goavl?status.svg)](https://godoc.org/github.com/ckatsak/goavl)
 
 Package goavl provides a simple AVL Tree implementation in Go.
+
+Work In Progress

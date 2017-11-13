@@ -45,14 +45,33 @@ func TestSimplePreorder(t *testing.T) {
 
 func TestInsertExisting(t *testing.T) {
 	tree := NewTree()
+	var err error
 
 	t.Logf("Preorder initial: %v\n", preOrder(t, tree.root))
-	tree.Insert(42)
+
+	err = tree.Insert(42)
 	t.Logf("Preorder after inserting 42: %v\n", preOrder(t, tree.root))
-	tree.Insert(42)
+	if err != nil {
+		t.Errorf("\t%v", err)
+	} else {
+		t.Logf("\tNo error value returned, as expected.\n")
+	}
+
+	err = tree.Insert(42)
 	t.Logf("Preorder after re-inserting 42: %v\n", preOrder(t, tree.root))
-	tree.Insert(42)
+	if err == nil {
+		t.Errorf("\tExpected an error!\n")
+	} else {
+		t.Logf("\tError value returned, as expected: \"%v\"\n", err)
+	}
+
+	err = tree.Insert(42)
 	t.Logf("Preorder after re-inserting 42: %v\n", preOrder(t, tree.root))
+	if err == nil {
+		t.Errorf("\tExpected an error!\n")
+	} else {
+		t.Logf("\tError value returned, as expected: \"%v\"\n", err)
+	}
 }
 
 func TestDeleteNonExisting(t *testing.T) {
@@ -107,7 +126,7 @@ func TestInsertInOrder(t *testing.T) {
 	tree := NewTree()
 
 	// Create a slice of random integers
-	rands := populateTreeAndSlice(t, tree, 1<<21)
+	rands := populateTreeAndSlice(t, tree, 1<<20)
 
 	// Create the inorder traversal of the tree
 	traversal := inOrder(t, tree.root)
@@ -126,11 +145,11 @@ func TestDeleteInOrder(t *testing.T) {
 	tree := NewTree()
 
 	// Create a slice of random integers
-	rands := populateTreeAndSlice(t, tree, 1<<21)
+	rands := populateTreeAndSlice(t, tree, 1<<20)
 
 	indicesToRemove := []int{}
 	for i := 0; i < 1<<11; i++ {
-		r := rand.Intn((1 << 21) - i)
+		r := rand.Intn((1 << 20) - i)
 		indicesToRemove = append(indicesToRemove, r)
 
 		tree.Delete(rands[r])
@@ -155,7 +174,7 @@ func TestMinDelete(t *testing.T) {
 	tree := NewTree()
 
 	// Create a slice of random integers
-	size := uint(1 << 21)
+	size := uint(1 << 20)
 	rands := populateTreeAndSlice(t, tree, size)
 
 	sort.Ints(rands)
@@ -174,7 +193,7 @@ func TestMaxDelete(t *testing.T) {
 	tree := NewTree()
 
 	// Create a slice of random integers
-	size := uint(1 << 21)
+	size := uint(1 << 20)
 	rands := populateTreeAndSlice(t, tree, size)
 
 	sort.Ints(rands)
@@ -199,7 +218,7 @@ func TestHeight(t *testing.T) {
 
 	// for exp=29, more than 14G of memory are required
 	// for exp=28, ~ 8.5G - 10.5G of memory are required (I didn't notice the exact amount)
-	for exp := uint(1); exp < 25; exp++ {
+	for exp := uint(1); exp < 24; exp++ {
 		// Insert new keys from range [2**(e-1), (2**e)-2] --> 2**(e-1)-2 new keys.
 		for i := 1 << (exp - 1); i < (1<<exp)-1; i++ {
 			tree.Insert(i)
