@@ -6,22 +6,30 @@ This software may be modified and distributed under the terms
 of the BSD 2-Clause License. See the LICENSE file for details.
 */
 
-// Package goavl is a simple implementation of the AVL Tree data structure.
+// Package goavl provides a generic implementation of the AVL Tree data
+// structure.
 //
 // Based on the description found at GeeksforGeeks.
 package goavl
 
 import "fmt"
 
+// Item is the interface required to be satisfied by any type to be able to
+// populate the AVL tree.
+type Item interface {
+	Equal(to Item) bool
+	Less(than Item) bool
+}
+
 // treeNode represents a single node in the AVL tree.
 type treeNode struct {
-	key         int
+	key         Item
 	left, right *treeNode
 	h           int
 }
 
 // newNode allocates, initializes and returns the address of a new treeNode.
-func newNode(key int) *treeNode {
+func newNode(key Item) *treeNode {
 	return &treeNode{
 		key: key,
 		h:   1, // initially inserted as a leaf
@@ -73,13 +81,14 @@ func (n *treeNode) subtreeRotateLeft() *treeNode {
 // balanceFactor returns the "balance factor" of treeNode n.
 func (n *treeNode) balanceFactor() int {
 	if n == nil {
+		// NOTE: This is probably unreachable, but anyway.
 		return 0
 	}
 	return n.left.height() - n.right.height()
 }
 
 // subtreeInsertNode inserts key as a new node in the AVL subtree rooted with n.
-func (n *treeNode) subtreeInsertNode(key int) (*treeNode, error) {
+func (n *treeNode) subtreeInsertNode(key Item) (*treeNode, error) {
 	var err error
 
 	// Step 1: Normal BST insertion
@@ -87,12 +96,12 @@ func (n *treeNode) subtreeInsertNode(key int) (*treeNode, error) {
 		return newNode(key), nil
 	}
 
-	if key < n.key {
+	if key.Less(n.key) {
 		n.left, err = n.left.subtreeInsertNode(key)
-	} else if key > n.key {
-		n.right, err = n.right.subtreeInsertNode(key)
-	} else {
+	} else if key.Equal(n.key) {
 		return n, fmt.Errorf("Key already in the tree: %v", key) // no duplicate nodes
+	} else { // if key.Greater(n.key) {
+		n.right, err = n.right.subtreeInsertNode(key)
 	}
 
 	// Step 2: Update the height of this ancestor node
@@ -103,21 +112,19 @@ func (n *treeNode) subtreeInsertNode(key int) (*treeNode, error) {
 	bal := n.balanceFactor()
 	switch {
 	case bal > 1:
-		switch {
-		case key < n.left.key: // case left left
-			return n.subtreeRotateRight(), err
-		case key > n.left.key: // case left right
-			n.left = n.left.subtreeRotateLeft()
+		if key.Less(n.left.key) { // case left left
 			return n.subtreeRotateRight(), err
 		}
+		// else if key.Greater(n.left.key): // case left right
+		n.left = n.left.subtreeRotateLeft()
+		return n.subtreeRotateRight(), err
 	case bal < -1:
-		switch {
-		case key > n.right.key: // case right right
-			return n.subtreeRotateLeft(), err
-		case key < n.right.key: // case right left
+		if key.Less(n.right.key) { // case right left
 			n.right = n.right.subtreeRotateRight()
 			return n.subtreeRotateLeft(), err
 		}
+		// else if key.Greater(n.right.key): // case right right
+		return n.subtreeRotateLeft(), err
 	}
 
 	return n, err
@@ -125,7 +132,7 @@ func (n *treeNode) subtreeInsertNode(key int) (*treeNode, error) {
 
 // subtreeDeleteNode deletes the node associated with key from the AVL subtree
 // rooted with n.
-func (n *treeNode) subtreeDeleteNode(key int) (*treeNode, error) {
+func (n *treeNode) subtreeDeleteNode(key Item) (*treeNode, error) {
 	var err error
 
 	// Step 1: Normal BST deletion
@@ -133,11 +140,9 @@ func (n *treeNode) subtreeDeleteNode(key int) (*treeNode, error) {
 		return nil, fmt.Errorf("Key not found in the tree: %v", key)
 	}
 
-	if key < n.key {
+	if key.Less(n.key) {
 		n.left, err = n.left.subtreeDeleteNode(key)
-	} else if key > n.key {
-		n.right, err = n.right.subtreeDeleteNode(key)
-	} else { // this is the treeNode to be deleted
+	} else if key.Equal(n.key) { // this is the treeNode to be deleted
 		if n.left == nil || n.right == nil { // case of having < 2 children
 			var tmp *treeNode
 			if n.left == nil {
@@ -160,6 +165,8 @@ func (n *treeNode) subtreeDeleteNode(key int) (*treeNode, error) {
 			// delete the inorder successor:
 			n.right, err = n.right.subtreeDeleteNode(tmp.key)
 		}
+	} else { // if key.Greater(n.key) {
+		n.right, err = n.right.subtreeDeleteNode(key)
 	}
 	// If the tree had only 1 node, then return
 	if n == nil {
@@ -177,14 +184,14 @@ func (n *treeNode) subtreeDeleteNode(key int) (*treeNode, error) {
 		if n.left.balanceFactor() >= 0 { // case left left
 			return n.subtreeRotateRight(), err
 		}
-		// else: case left right
+		// else if n.left.balanceFactor() < 0: // case left right
 		n.left = n.left.subtreeRotateLeft()
 		return n.subtreeRotateRight(), err
 	case bal < -1:
 		if n.right.balanceFactor() <= 0 { // case right right
 			return n.subtreeRotateLeft(), err
 		}
-		// else: case right left
+		// else if n.right.balanceFactor() > 0: // case right left
 		n.right = n.right.subtreeRotateRight()
 		return n.subtreeRotateLeft(), err
 	}
@@ -231,7 +238,7 @@ func (t *Tree) Size() int {
 // Insert inserts a key into the AVL tree and returns an error value, which is
 // non-nil if the key already exists in the tree (i.e. duplicate keys are not
 // supported).
-func (t *Tree) Insert(key int) (err error) {
+func (t *Tree) Insert(key Item) (err error) {
 	if t.root, err = t.root.subtreeInsertNode(key); err == nil {
 		t.size++
 	}
@@ -240,7 +247,7 @@ func (t *Tree) Insert(key int) (err error) {
 
 // Delete removes a key from the AVL tree and returns an error value, which is
 // non-nil if the key doesn't exist in the tree.
-func (t *Tree) Delete(key int) (err error) {
+func (t *Tree) Delete(key Item) (err error) {
 	if t.root, err = t.root.subtreeDeleteNode(key); err == nil {
 		t.size--
 	}
@@ -249,18 +256,18 @@ func (t *Tree) Delete(key int) (err error) {
 
 // Min returns the minimum key in the AVL tree and an error value. If the tree
 // is empty, the error value is non-nil and the result should not be trusted.
-func (t *Tree) Min() (int, error) {
+func (t *Tree) Min() (Item, error) {
 	if t.root == nil {
-		return 0, fmt.Errorf("Empty tree")
+		return nil, fmt.Errorf("Empty tree")
 	}
 	return t.root.subtreeMin().key, nil
 }
 
 // Max returns the maximum key in the AVL tree and an error value. If the tree
 // is empty, the error value is non-nil and the result should not be trusted.
-func (t *Tree) Max() (int, error) {
+func (t *Tree) Max() (Item, error) {
 	if t.root == nil {
-		return 0, fmt.Errorf("Empty tree")
+		return nil, fmt.Errorf("Empty tree")
 	}
 	return t.root.subtreeMax().key, nil
 }
