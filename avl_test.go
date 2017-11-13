@@ -313,3 +313,27 @@ func TestHeight(t *testing.T) {
 		t.Logf("\n")
 	}
 }
+
+func TestSize(t *testing.T) {
+	tree := NewTree()
+
+	size := 1 << 20
+	for i := 0; i < size; i++ {
+		if tree.Size() != i {
+			t.Errorf("\ttree.Size() returned %d; expected %d\n", tree.Size(), i)
+			t.Errorf("\t ^ Inorder: %v\n", inOrder(t, tree.root))
+		}
+		if err := tree.Insert(i); err != nil {
+			t.Fatalf("\t%v\n", err)
+		}
+	}
+	for i := 0; i < size; i += 2 {
+		if err := tree.Delete(i); err != nil {
+			t.Fatalf("\t%v\n", err)
+		}
+	}
+	if tree.Size() != size/2 {
+		t.Errorf("\ttree.Size() returned %d; expected %d\n", tree.Size(), size/2)
+		t.Logf("\t ^ Inorder: %v\n", inOrder(t, tree.root))
+	}
+}

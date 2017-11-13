@@ -70,7 +70,7 @@ func (n *treeNode) subtreeRotateLeft() *treeNode {
 	return m
 }
 
-// balanceFactor returns the "balance factor" of AVLNode n.
+// balanceFactor returns the "balance factor" of treeNode n.
 func (n *treeNode) balanceFactor() int {
 	if n == nil {
 		return 0
@@ -137,7 +137,7 @@ func (n *treeNode) subtreeDeleteNode(key int) (*treeNode, error) {
 		n.left, err = n.left.subtreeDeleteNode(key)
 	} else if key > n.key {
 		n.right, err = n.right.subtreeDeleteNode(key)
-	} else { // this is the AVLNode to be deleted
+	} else { // this is the treeNode to be deleted
 		if n.left == nil || n.right == nil { // case of having < 2 children
 			var tmp *treeNode
 			if n.left == nil {
@@ -215,6 +215,7 @@ func (n *treeNode) subtreeMax() *treeNode {
 // Tree is the exported struct for interacting with the AVL tree.
 type Tree struct {
 	root *treeNode
+	size int
 }
 
 // NewTree creates a new empty AVL tree.
@@ -222,18 +223,27 @@ func NewTree() *Tree {
 	return &Tree{}
 }
 
+// Size returns the current number of keys in the AVL tree.
+func (t *Tree) Size() int {
+	return t.size
+}
+
 // Insert inserts a key into the AVL tree and returns an error value, which is
 // non-nil if the key already exists in the tree (i.e. duplicate keys are not
 // supported).
 func (t *Tree) Insert(key int) (err error) {
-	t.root, err = t.root.subtreeInsertNode(key)
+	if t.root, err = t.root.subtreeInsertNode(key); err == nil {
+		t.size++
+	}
 	return
 }
 
 // Delete removes a key from the AVL tree and returns an error value, which is
 // non-nil if the key doesn't exist in the tree.
 func (t *Tree) Delete(key int) (err error) {
-	t.root, err = t.root.subtreeDeleteNode(key)
+	if t.root, err = t.root.subtreeDeleteNode(key); err == nil {
+		t.size--
+	}
 	return
 }
 
