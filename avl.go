@@ -236,6 +236,11 @@ func (t *Tree) Max() int {
 	return t.root.subtreeMax().key
 }
 
+// Height returns the current height of the AVL tree.
+func (t *Tree) Height() int {
+	return t.root.height()
+}
+
 func max(a, b int) int {
 	if a > b {
 		return a
