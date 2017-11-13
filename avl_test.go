@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-func preOrder(t *testing.T, n *AVLNode) []int {
+func preOrder(t *testing.T, n *treeNode) []int {
 	t.Helper()
 	if n == nil { // case n is leaf
 		return nil
@@ -26,7 +26,7 @@ func preOrder(t *testing.T, n *AVLNode) []int {
 }
 
 func TestSimplePreorder(t *testing.T) {
-	tree := NewAVLTree()
+	tree := NewTree()
 
 	tree.Insert(9)
 	tree.Insert(5)
@@ -43,7 +43,7 @@ func TestSimplePreorder(t *testing.T) {
 	t.Logf("Preorder after deletion of 10: %v\n", preOrder(t, tree.root))
 }
 
-func inOrder(t *testing.T, n *AVLNode) []int {
+func inOrder(t *testing.T, n *treeNode) []int {
 	t.Helper()
 	if n == nil {
 		return nil
@@ -68,7 +68,7 @@ func verifyTraversal(t *testing.T, traversal, sortedRands []int) {
 	}
 }
 
-func populateTreeAndSlice(t *testing.T, tree *AVLTree, size uint) []int {
+func populateTreeAndSlice(t *testing.T, tree *Tree, size uint) []int {
 	t.Helper()
 	rands := []int{}
 	for i := uint(0); i < size; i++ {
@@ -80,7 +80,7 @@ func populateTreeAndSlice(t *testing.T, tree *AVLTree, size uint) []int {
 }
 
 func TestInsertInOrder(t *testing.T) {
-	tree := NewAVLTree()
+	tree := NewTree()
 
 	// Create a slice of random integers
 	rands := populateTreeAndSlice(t, tree, 1<<21)
@@ -99,7 +99,7 @@ func TestInsertInOrder(t *testing.T) {
 }
 
 func TestDeleteInOrder(t *testing.T) {
-	tree := NewAVLTree()
+	tree := NewTree()
 
 	// Create a slice of random integers
 	rands := populateTreeAndSlice(t, tree, 1<<21)
@@ -133,7 +133,7 @@ func TestDeleteInOrder(t *testing.T) {
 }
 
 func TestMinDelete(t *testing.T) {
-	tree := NewAVLTree()
+	tree := NewTree()
 
 	// Create a slice of random integers
 	size := uint(1 << 21)
@@ -152,7 +152,7 @@ func TestMinDelete(t *testing.T) {
 }
 
 func TestMaxDelete(t *testing.T) {
-	tree := NewAVLTree()
+	tree := NewTree()
 
 	// Create a slice of random integers
 	size := uint(1 << 21)
