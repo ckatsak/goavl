@@ -219,6 +219,31 @@ func (n *treeNode) subtreeMax() *treeNode {
 	return curr
 }
 
+// subtreeInOrder returns a slice of all Items currently in the AVL sub-tree
+// rooted by n, by performing an in-order traversal of its nodes.
+func (n *treeNode) subtreeInOrder() []Item {
+	if n == nil {
+		return nil
+	}
+	ret := []Item{}
+	ret = append(ret, n.left.subtreeInOrder()...)
+	ret = append(ret, n.key)
+	ret = append(ret, n.right.subtreeInOrder()...)
+	return ret
+}
+
+// subtreePreOrder returns a slice of all Items currently in the AVL sub-tree
+// rooted by n, by performing a pre-order traversal of its nodes.
+func (n *treeNode) subtreePreOrder() []Item {
+	if n == nil {
+		return nil
+	}
+	ret := []Item{n.key}
+	ret = append(ret, n.left.subtreePreOrder()...)
+	ret = append(ret, n.right.subtreePreOrder()...)
+	return ret
+}
+
 // Tree is the exported struct for interacting with the AVL tree.
 type Tree struct {
 	root *treeNode
@@ -275,6 +300,18 @@ func (t *Tree) Max() (Item, error) {
 // Height returns the current height of the AVL tree.
 func (t *Tree) Height() int {
 	return t.root.height()
+}
+
+// InOrder returns a slice of all Items currently in the AVL Tree by performing
+// an in-order traversal of its nodes.
+func (t *Tree) InOrder() []Item {
+	return t.root.subtreeInOrder()
+}
+
+// PreOrder returns a slice of all Items currently in the AVL Tree by
+// performing a pre-order traversal of its nodes.
+func (t *Tree) PreOrder() []Item {
+	return t.root.subtreePreOrder()
 }
 
 func max(a, b int) int {

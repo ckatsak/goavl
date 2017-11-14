@@ -109,6 +109,49 @@ func TestSimplePreorder(t *testing.T) {
 	t.Logf("Preorder after deletion of 10: %v\n", preOrder(t, tree.root))
 }
 
+func TestInOrder(t *testing.T) {
+	tree := NewTree()
+
+	for _, key := range []Integer{9, 5, 10, 0, 6, 11, -1, 1, 2} {
+		if err := tree.Insert(key); err != nil {
+			t.Errorf("\t%v\n", err)
+		}
+	}
+	t.Logf("tree.InOrder() before deletion of 10: %v\n", tree.InOrder())
+
+	if err := tree.Delete(Integer(10)); err != nil {
+		t.Errorf("\t%v\n", err)
+	}
+	t.Logf("tree.InOrder() after deletion of 10: %v\n", tree.InOrder())
+
+	if err := tree.Delete(Integer(1)); err != nil {
+		t.Errorf("\t%v\n", err)
+	}
+	t.Logf("tree.InOrder() after deletion of 1: %v\n", tree.InOrder())
+}
+
+func TestPreOrder(t *testing.T) {
+	tree := NewTree()
+
+	for _, key := range []Integer{9, 5, 10, 0, 6, 11, -1, 1, 2} {
+		if err := tree.Insert(key); err != nil {
+			t.Errorf("\t%v\n", err)
+		}
+	}
+
+	tpot := tree.PreOrder()
+	lpot := preOrder(t, tree.root)
+
+	if len(tpot) != len(lpot) {
+		t.Fatalf("len(tree.PreOrder()) = %d; expected %d\n", len(tpot), len(lpot))
+	}
+	for i := 0; i < len(tpot); i++ {
+		if tpot[i] != lpot[i] {
+			t.Errorf("tpot[%d] = %d; expected %d\n", i, tpot[i], lpot[i])
+		}
+	}
+}
+
 func TestInsertExisting(t *testing.T) {
 	tree := NewTree()
 	var err error
