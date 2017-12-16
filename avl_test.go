@@ -16,6 +16,15 @@ for a verbose output.
 Create a coverprofile and produce a html file:
 	$ go test -coverprofile=cov.out
 	$ go tool cover -html=cov.out -o cov.htm
+
+Create cpuprofile and memprofile during testing:
+	$ go test -cpuprofile cpu.out
+	$ go tool pprof goavl.test cpu.out
+and:
+	$ go test -memprofile mem.out -memprofilerate 500
+	$ go tool pprof goavl.test mem.out
+Then explore, e.g.:
+	(pprof) top10
 */
 
 package goavl

@@ -1,10 +1,26 @@
-/*
-Copyright (C) 2017, Christos Katsakioris
-All rights reserved.
-
-This software may be modified and distributed under the terms
-of the BSD 2-Clause License. See the LICENSE file for details.
-*/
+// Copyright (c) 2017, Christos Katsakioris
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// * Redistributions of source code must retain the above copyright notice, this
+//   list of conditions and the following disclaimer.
+//
+// * Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Package goavl provides a generic implementation of the AVL Tree data
 // structure.
@@ -302,14 +318,14 @@ func (t *Tree) Height() int {
 	return t.root.height()
 }
 
-// InOrder returns a slice of all Items currently in the AVL Tree by performing
-// an in-order traversal of its nodes.
+// InOrder returns a slice of all Items that currently populate the AVL Tree,
+// sorted as in an in-order traversal of its nodes.
 func (t *Tree) InOrder() []Item {
 	return t.root.subtreeInOrder()
 }
 
-// PreOrder returns a slice of all Items currently in the AVL Tree by
-// performing a pre-order traversal of its nodes.
+// PreOrder returns a slice of all Items that currently populate the AVL Tree,
+// sorted as in a pre-order traversal of its nodes.
 func (t *Tree) PreOrder() []Item {
 	return t.root.subtreePreOrder()
 }

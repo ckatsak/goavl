@@ -1,2 +1,5 @@
-cov.htm
 cov.out
+cov.htm
+cpu.out
+mem.out
+goavl.test
